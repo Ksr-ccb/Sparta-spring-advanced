@@ -13,6 +13,8 @@ class PasswordEncoderTest {
     @InjectMocks
     private PasswordEncoder passwordEncoder;
 
+
+
     @Test
     void matches_메서드가_정상적으로_동작한다() {
         // given
@@ -20,7 +22,8 @@ class PasswordEncoderTest {
         String encodedPassword = passwordEncoder.encode(rawPassword);
 
         // when
-        boolean matches = passwordEncoder.matches(encodedPassword, rawPassword);
+        //matches 함수를 직접보면 파라미터의 순서가 (String rawPassword, String encodedPassword) 로 들어와야함.
+        boolean matches = passwordEncoder.matches(rawPassword,encodedPassword);
 
         // then
         assertTrue(matches);
