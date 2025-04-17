@@ -5,12 +5,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -33,25 +36,26 @@ public class LoggingAspect {
     @Around("controller()")
     public Object loggingAdminApi(ProceedingJoinPoint joinPoint) throws Throwable{
         HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 
-        log.debug("This is LoggingAspect.loggingAdminApi");
+        log.info("This is LoggingAspect.loggingAdminApi");
         log.info("Request User id = {}", request.getAttribute("userId"));
         log.info("Request time : {}", LocalDateTime.now());
         log.info("RequestURL = {}", request.getRequestURL());
 
         //Request Body
-        for(Object arg : joinPoint.getArgs()){
-            if(!(arg instanceof HttpServletRequest) && !(arg instanceof HttpServletResponse)){
-                continue;
-            }
+        Map<String, Object> paramMap = new HashMap<>();
+        String[] paramNames = signature.getParameterNames();
+        Object[] paramValues = joinPoint.getArgs();
 
-            try {
-                String requestBodyJson = new ObjectMapper().writeValueAsString(arg);
-                log.info("RequestBody = {}", requestBodyJson);
-            } catch (Exception e) {
-                log.warn("Failed to serialize request body: {}", arg.getClass().getName());
+        for (int i = 0; i < paramNames.length; i++) {
+            if (!(paramValues[i] instanceof HttpServletRequest) && !(paramValues[i] instanceof HttpServletResponse)) {
+                paramMap.put(paramNames[i], paramValues[i]);
             }
         }
+        String json = new ObjectMapper().writeValueAsString(paramMap);
+        log.info("Request Params = {}", json);
+
 
         //메서드 실행
         Object result = joinPoint.proceed();
