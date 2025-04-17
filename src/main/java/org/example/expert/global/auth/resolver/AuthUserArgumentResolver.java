@@ -1,9 +1,9 @@
-package org.example.expert.config;
+package org.example.expert.global.auth.resolver;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.example.expert.domain.auth.exception.AuthException;
-import org.example.expert.domain.common.annotation.Auth;
-import org.example.expert.domain.common.dto.AuthUser;
+import org.example.expert.global.exception.AuthException;
+import org.example.expert.global.auth.annotation.Auth;
+import org.example.expert.global.auth.dto.AuthUser;
 import org.example.expert.domain.user.enums.UserRole;
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;

@@ -1,4 +1,4 @@
-package org.example.expert.config.Logging;
+package org.example.expert.global.Logging;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,8 +1,7 @@
 package org.example.expert.domain.user.enums;
 
-import org.example.expert.domain.common.exception.InvalidRequestException;
-
 import java.util.Arrays;
+import org.example.expert.global.exception.InvalidRequestException;
 
 public enum UserRole {
     ADMIN, USER;

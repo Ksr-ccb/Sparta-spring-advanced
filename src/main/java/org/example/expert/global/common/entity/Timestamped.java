@@ -1,4 +1,4 @@
-package org.example.expert.domain.common.entity;
+package org.example.expert.global.common.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

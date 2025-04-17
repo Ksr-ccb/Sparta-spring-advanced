@@ -1,7 +1,6 @@
 package org.example.expert.domain.manager.service;
 
-import org.example.expert.domain.common.dto.AuthUser;
-import org.example.expert.domain.common.exception.InvalidRequestException;
+import org.example.expert.global.auth.dto.AuthUser;
 import org.example.expert.domain.manager.dto.request.ManagerSaveRequest;
 import org.example.expert.domain.manager.dto.response.ManagerResponse;
 import org.example.expert.domain.manager.dto.response.ManagerSaveResponse;
@@ -12,6 +11,8 @@ import org.example.expert.domain.todo.repository.TodoRepository;
 import org.example.expert.domain.user.entity.User;
 import org.example.expert.domain.user.enums.UserRole;
 import org.example.expert.domain.user.repository.UserRepository;
+import org.example.expert.global.exception.InvalidRequestException;
+import org.example.expert.global.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -45,7 +46,7 @@ class ManagerServiceTest {
         given(todoRepository.findById(todoId)).willReturn(Optional.empty()); //텅 빈거 반환할 예정
 
         // when & then
-        InvalidRequestException exception = assertThrows(InvalidRequestException.class, () -> managerService.getManagers(todoId));
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> managerService.getManagers(todoId));
         assertEquals("Todo not found", exception.getMessage());
     }
 

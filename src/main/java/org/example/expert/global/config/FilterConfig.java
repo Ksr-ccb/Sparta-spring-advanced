@@ -1,6 +1,8 @@
-package org.example.expert.config;
+package org.example.expert.global.config;
 
 import lombok.RequiredArgsConstructor;
+import org.example.expert.global.auth.jwt.JwtFilter;
+import org.example.expert.global.auth.jwt.JwtUtil;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
