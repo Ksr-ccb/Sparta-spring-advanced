@@ -1,4 +1,4 @@
-package org.example.expert.config;
+package org.example.expert.config.Logging;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,6 +13,7 @@ public class LoggerInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        log.debug("This is LoggerInterceptor.preHandle");
         log.info("RequestURL = {}", request.getRequestURL());
         log.info("Request time : {}", LocalDateTime.now());
         return HandlerInterceptor.super.preHandle(request, response, handler);
