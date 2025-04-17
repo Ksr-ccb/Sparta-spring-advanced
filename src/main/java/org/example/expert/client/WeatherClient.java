@@ -26,11 +26,11 @@ public class WeatherClient {
         ResponseEntity<WeatherDto[]> responseEntity =
                 restTemplate.getForEntity(buildWeatherApiUri(), WeatherDto[].class);
 
-        WeatherDto[] weatherArray = responseEntity.getBody();
         if (!HttpStatus.OK.equals(responseEntity.getStatusCode())) {
             throw new ServerException("날씨 데이터를 가져오는데 실패했습니다. 상태 코드: " + responseEntity.getStatusCode());
         }
         // 이미 if문을 만족하는 조건은 throw으로 메서드가 종료되기 때문에 아래의 else문이 필요하지 않습니다.
+        WeatherDto[] weatherArray = responseEntity.getBody();
         if (weatherArray == null || weatherArray.length == 0) {
             throw new ServerException("날씨 데이터가 없습니다.");
         }
