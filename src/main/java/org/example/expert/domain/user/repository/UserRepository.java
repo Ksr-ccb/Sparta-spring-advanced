@@ -1,7 +1,6 @@
 package org.example.expert.domain.user.repository;
 
 import org.example.expert.domain.user.entity.User;
-import org.example.expert.global.exception.InvalidRequestException;
 import org.example.expert.global.exception.NotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 
