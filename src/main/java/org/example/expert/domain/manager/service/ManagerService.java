@@ -36,8 +36,7 @@ public class ManagerService {
         ManagerSaveRequest managerSaveRequest) {
         // 일정을 만든 유저
         User user = User.fromAuthUser(authUser);
-        Todo todo = todoRepository.findById(todoId)
-            .orElseThrow(() -> new NotFoundException("Todo not found"));
+        Todo todo = todoRepository.findByIdOrElseThrow(todoId);
 
         //조건식에서 todo.getUser() 을 시도할때부터 Null 이 반환되는데, getId() 호출하면 NPE 이 일어날 수 밖에없다.
         //안전하게 todo.getUser() 에서 한번 NULL 검사를 한 뒤, 그뒤에 체이닝으로 Id 값을 받아와야 한다.
@@ -64,8 +63,7 @@ public class ManagerService {
 
     @Transactional(readOnly = true)
     public List<ManagerResponse> getManagers(long todoId) {
-        Todo todo = todoRepository.findById(todoId)
-            .orElseThrow(() -> new InvalidRequestException("Todo not found"));
+        Todo todo = todoRepository.findByIdOrElseThrow(todoId);
 
         List<Manager> managerList = managerRepository.findByTodoIdWithUser(todo.getId());
 
@@ -82,11 +80,8 @@ public class ManagerService {
 
     @Transactional
     public void deleteManager(long userId, long todoId, long managerId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new InvalidRequestException("User not found"));
-
-        Todo todo = todoRepository.findById(todoId)
-            .orElseThrow(() -> new InvalidRequestException("Todo not found"));
+        User user = userRepository.findByIdOrElseThrow(userId);
+        Todo todo = todoRepository.findByIdOrElseThrow(todoId);
 
         if (todo.getUser() == null || !ObjectUtils.nullSafeEquals(user.getId(),
             todo.getUser().getId())) {
@@ -94,7 +89,7 @@ public class ManagerService {
         }
 
         Manager manager = managerRepository.findById(managerId)
-            .orElseThrow(() -> new InvalidRequestException("Manager not found"));
+            .orElseThrow(() -> new NotFoundException("Manager not found"));
 
         if (!ObjectUtils.nullSafeEquals(todo.getId(), manager.getTodo().getId())) {
             throw new InvalidRequestException("해당 일정에 등록된 담당자가 아닙니다.");

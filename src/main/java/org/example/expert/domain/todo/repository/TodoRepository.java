@@ -1,6 +1,8 @@
 package org.example.expert.domain.todo.repository;
 
 import org.example.expert.domain.todo.entity.Todo;
+import org.example.expert.domain.user.entity.User;
+import org.example.expert.global.exception.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -27,4 +29,9 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     Optional<Todo> findByIdWithUser(@Param("todoId") Long todoId);
 
     int countById(Long todoId);
+
+
+    default Todo findByIdOrElseThrow(Long id){
+        return findById(id).orElseThrow(() -> new NotFoundException("Todo not found"));
+    }
 }

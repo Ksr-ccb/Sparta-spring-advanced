@@ -19,7 +19,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserResponse getUser(long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new InvalidRequestException("User not found"));
+        User user = userRepository.findByIdOrElseThrow(userId);
         return new UserResponse(user.getId(), user.getEmail());
     }
 
@@ -28,17 +28,11 @@ public class UserService {
         //UserChangePasswordRequest 에서 @Pattern 어노테이션 사용으로 정규식을 추가했습니다.
         //입력검증은 서비스단에서 더이상 필요하지 않습니다.
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new InvalidRequestException("User not found"));
-
-        if (passwordEncoder.matches(userChangePasswordRequest.getNewPassword(), user.getPassword())) {
-            throw new InvalidRequestException("새 비밀번호는 기존 비밀번호와 같을 수 없습니다.");
-        }
-
-        if (!passwordEncoder.matches(userChangePasswordRequest.getOldPassword(), user.getPassword())) {
+        User user = userRepository.findByIdOrElseThrow(userId);
+        if(!user.isPasswordCorrect(userChangePasswordRequest.getNewPassword(), passwordEncoder)) {
             throw new InvalidRequestException("잘못된 비밀번호입니다.");
         }
 
-        user.changePassword(passwordEncoder.encode(userChangePasswordRequest.getNewPassword()));
+        user.changePassword(userChangePasswordRequest, passwordEncoder);
     }
 }

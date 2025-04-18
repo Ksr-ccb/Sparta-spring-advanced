@@ -3,9 +3,12 @@ package org.example.expert.domain.user.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.expert.domain.user.dto.request.UserChangePasswordRequest;
 import org.example.expert.global.auth.dto.AuthUser;
 import org.example.expert.global.common.entity.Timestamped;
 import org.example.expert.domain.user.enums.UserRole;
+import org.example.expert.global.config.PasswordEncoder;
+import org.example.expert.global.exception.InvalidRequestException;
 
 @Getter
 @Entity
@@ -37,9 +40,17 @@ public class User extends Timestamped {
         return new User(authUser.getId(), authUser.getEmail(), authUser.getUserRole());
     }
 
-    public void changePassword(String password) {
-        this.password = password;
+    public void changePassword(UserChangePasswordRequest userChangePasswordRequest, PasswordEncoder encoder) {
+        if (encoder.matches(userChangePasswordRequest.getNewPassword(), this.password)) {
+            throw new InvalidRequestException("새 비밀번호는 기존 비밀번호와 같을 수 없습니다.");
+        }
+        this.password = encoder.encode(userChangePasswordRequest.getNewPassword());
     }
+
+    public boolean isPasswordCorrect(String inputPassword, PasswordEncoder encoder){
+        return encoder.matches(inputPassword, this.password);
+    }
+
 
     public void updateRole(UserRole userRole) {
         this.userRole = userRole;

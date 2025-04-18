@@ -58,8 +58,7 @@ public class TodoService {
 
     public TodoResponse getTodo(long todoId) {
 
-        Todo todo = todoRepository.findById(todoId).orElseThrow(() ->
-            new NotFoundException("Todo not found"));
+        Todo todo = todoRepository.findByIdOrElseThrow(todoId);
 
         User user = todo.getUser();
 
