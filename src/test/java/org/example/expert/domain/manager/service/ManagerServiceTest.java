@@ -15,7 +15,6 @@ import org.example.expert.domain.user.repository.UserRepository;
 import org.example.expert.global.exception.AuthException;
 import org.example.expert.global.exception.InvalidRequestException;
 import org.example.expert.global.exception.NotFoundException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
