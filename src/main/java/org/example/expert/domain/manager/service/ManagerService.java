@@ -38,7 +38,7 @@ public class ManagerService {
         Long authUserId = authUser.getId(); //로그인 유저
         Todo todo = todoRepository.findByIdOrElseThrow(todoId); //일정
 
-        validateUserAndWriter(authUserId, todo.getUser());//로그인유저, 일정작성자 검사
+        validateUserAndWriter(authUserId, todo);//로그인유저, 일정작성자 검사
 
         User managerUser = userRepository.findById(managerSaveRequest.getManagerUserId()) //담당자 확인
             .orElseThrow(() -> new NotFoundException("등록하려고 하는 담당자 유저가 존재하지 않습니다."));
@@ -54,10 +54,10 @@ public class ManagerService {
         );
     }
 
-    private void validateUserAndWriter(Long authUserId, User writer){
+    private void validateUserAndWriter(Long authUserId, Todo todo){
         if (!ObjectUtils.nullSafeEquals(authUserId,
-            Optional.ofNullable(writer).map(User::getId))) {
-            throw new InvalidRequestException("일정 작성자 본인만 담당자를 등록할 수 있습니다. 로그인 정보와 작성자를 확인하세요.");
+            Optional.ofNullable(todo.getUser()).map(User::getId).orElse(null))) {
+            throw new InvalidRequestException("일정 작성자 본인만 담당자를 설정할 수 있습니다. 로그인 정보와 작성자를 확인하세요.");
         }
     }
 
@@ -89,10 +89,7 @@ public class ManagerService {
         User user = userRepository.findByIdOrElseThrow(userId);
         Todo todo = todoRepository.findByIdOrElseThrow(todoId);
 
-        if (todo.getUser() == null || !ObjectUtils.nullSafeEquals(user.getId(),
-            todo.getUser().getId())) {
-            throw new InvalidRequestException("해당 일정을 만든 유저가 유효하지 않습니다.");
-        }
+        validateUserAndWriter(user.getId(), todo);//로그인유저, 일정작성자 검사
 
         Manager manager = managerRepository.findById(managerId)
             .orElseThrow(() -> new NotFoundException("Manager not found"));
