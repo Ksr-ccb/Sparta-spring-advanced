@@ -1,6 +1,8 @@
 package org.example.expert.domain.todo.dto.response;
 
+import lombok.Builder;
 import lombok.Getter;
+import org.example.expert.domain.todo.entity.Todo;
 import org.example.expert.domain.user.dto.response.UserResponse;
 
 import java.time.LocalDateTime;
@@ -16,6 +18,7 @@ public class TodoResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
+    @Builder
     public TodoResponse(Long id, String title, String contents, String weather, UserResponse user, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.id = id;
         this.title = title;
@@ -25,4 +28,17 @@ public class TodoResponse {
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
     }
+
+    public static TodoResponse of(Todo todo, UserResponse user) {
+        return TodoResponse.builder()
+            .id(todo.getId())
+            .title(todo.getTitle())
+            .contents(todo.getContents())
+            .weather(todo.getWeather())
+            .user(user)
+            .createdAt(todo.getCreatedAt())
+            .modifiedAt(todo.getModifiedAt())
+            .build();
+    }
+
 }
