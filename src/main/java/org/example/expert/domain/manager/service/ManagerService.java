@@ -34,23 +34,16 @@ public class ManagerService {
     @Transactional
     public ManagerSaveResponse saveManager(AuthUser authUser, long todoId,
         ManagerSaveRequest managerSaveRequest) {
-        // 일정을 만든 유저
-        User user = User.fromAuthUser(authUser);
-        Todo todo = todoRepository.findByIdOrElseThrow(todoId);
 
-        //조건식에서 todo.getUser() 을 시도할때부터 Null 이 반환되는데, getId() 호출하면 NPE 이 일어날 수 밖에없다.
-        //안전하게 todo.getUser() 에서 한번 NULL 검사를 한 뒤, 그뒤에 체이닝으로 Id 값을 받아와야 한다.
-        if (!ObjectUtils.nullSafeEquals(user.getId(),
-            Optional.ofNullable(todo.getUser()).map(User::getId))) {
-            throw new InvalidRequestException("담당자를 등록하려고 하는 유저나 일정을 만든 유저가 유효하지 않습니다.");
-        }
+        Long authUserId = authUser.getId(); //로그인 유저
+        Todo todo = todoRepository.findByIdOrElseThrow(todoId); //일정
 
-        User managerUser = userRepository.findById(managerSaveRequest.getManagerUserId())
+        validateUserAndWriter(authUserId, todo.getUser());//로그인유저, 일정작성자 검사
+
+        User managerUser = userRepository.findById(managerSaveRequest.getManagerUserId()) //담당자 확인
             .orElseThrow(() -> new NotFoundException("등록하려고 하는 담당자 유저가 존재하지 않습니다."));
 
-        if (ObjectUtils.nullSafeEquals(user.getId(), managerUser.getId())) {
-            throw new AuthException("일정 작성자는 본인을 담당자로 등록할 수 없습니다.");
-        }
+        verifyManagerIdentity(authUserId, managerUser);
 
         Manager newManagerUser = new Manager(managerUser, todo);
         Manager savedManagerUser = managerRepository.save(newManagerUser);
@@ -59,6 +52,19 @@ public class ManagerService {
             savedManagerUser.getId(),
             new UserResponse(managerUser.getId(), managerUser.getEmail())
         );
+    }
+
+    private void validateUserAndWriter(Long authUserId, User writer){
+        if (!ObjectUtils.nullSafeEquals(authUserId,
+            Optional.ofNullable(writer).map(User::getId))) {
+            throw new InvalidRequestException("일정 작성자 본인만 담당자를 등록할 수 있습니다. 로그인 정보와 작성자를 확인하세요.");
+        }
+    }
+
+    private void verifyManagerIdentity(Long authUserId, User manager){
+        if (ObjectUtils.nullSafeEquals(authUserId, manager.getId())) {
+            throw new AuthException("일정 작성자는 본인을 담당자로 등록할 수 없습니다.");
+        }
     }
 
     @Transactional(readOnly = true)
@@ -92,7 +98,7 @@ public class ManagerService {
             .orElseThrow(() -> new NotFoundException("Manager not found"));
 
         if (!ObjectUtils.nullSafeEquals(todo.getId(), manager.getTodo().getId())) {
-            throw new InvalidRequestException("해당 일정에 등록된 담당자가 아닙니다.");
+            throw new AuthException("해당 일정에 등록된 담당자가 아닙니다.");
         }
 
         managerRepository.delete(manager);
