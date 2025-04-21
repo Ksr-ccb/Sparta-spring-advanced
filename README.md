@@ -22,7 +22,7 @@
 3. 문제 정의 및 해결
    - <a href= "https://velog.io/@tofha054/Spring-심화-개인-과제-Lv.5-코드-개선"> 풀이 링크 </a>
 5. 테스트 커버리지
-![image](https://github.com/user-attachments/assets/f258703a-dc59-4d73-9214-c0b185aa2d84)
+![image](https://github.com/user-attachments/assets/e3521176-212f-47a4-9c24-b04f8820a296)
 서비스 레이어만 테스트 코드 작성했습니다.
 
 <br><hr><br>
